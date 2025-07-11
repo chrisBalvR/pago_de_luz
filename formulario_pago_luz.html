@@ -1,72 +1,51 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consumo Eléctrico Compartido</title>
+  <title>Consumo Eléctrico</title>
   <link rel="stylesheet" href="estilos.css" />
-  <script defer src="logica.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <main class="contenedor-principal">
-    <h1>Consumo Eléctrico Compartido</h1>
+  <main class="contenedor">
+    <h1 class="titulo">Consumo Eléctrico</h1>
     <p class="subtitulo">Suministro 1943683 - Jr. Baritina 450</p>
 
     <form id="formulario">
-      <label for="monto">Monto total del recibo (S/):</label>
-      <input type="number" id="monto" placeholder="Ingrese el monto del recibo de luz" step="0.01" required />
+      <label for="monto" class="etiqueta">Monto del recibo (S/):</label>
+      <input type="number" id="monto" placeholder="Ingrese el monto" step="0.01" required />
+      <hr />
 
-      <section class="lectura">
-        <h2>Lectura del Medidor A</h2>
-        <div class="campos-lectura">
-          <input type="number" id="anteriorA" placeholder="Anterior" required />
-          <input type="number" id="actualA" placeholder="Actual" required />
-        </div>
-        <input type="text" id="consumoA" class="consumo" placeholder="Energía consumida en el mes" readonly />
-      </section>
+      <!-- Medidor A -->
+      <label class="subseccion">Lectura del Medidor A</label>
+      <div class="grupo-lecturas">
+        <input type="number" placeholder="Anterior" id="anteriorA" required />
+        <input type="number" placeholder="Actual" id="actualA" required />
+      </div>
+      <input type="text" id="consumoA" class="campo-consumo" placeholder="Consumo del mes" readonly />
+      <hr />
 
-      <section class="lectura">
-        <h2>Lectura del Medidor B</h2>
-        <div class="campos-lectura">
-          <input type="number" id="anteriorB" placeholder="Anterior" required />
-          <input type="number" id="actualB" placeholder="Actual" required />
-        </div>
-        <input type="text" id="consumoB" class="consumo" placeholder="Energía consumida en el mes" readonly />
-      </section>
+      <!-- Medidor B -->
+      <label class="subseccion">Lectura del Medidor B</label>
+      <div class="grupo-lecturas">
+        <input type="number" placeholder="Anterior" id="anteriorB" required />
+        <input type="number" placeholder="Actual" id="actualB" required />
+      </div>
+      <input type="text" id="consumoB" class="campo-consumo" placeholder="Consumo del mes" readonly />
+      <hr />
 
-      <section class="lectura">
-        <h2>Lectura del Medidor C</h2>
-        <div class="campos-lectura">
-          <input type="number" id="anteriorC" placeholder="Anterior" required />
-          <input type="number" id="actualC" placeholder="Actual" required />
-        </div>
-        <input type="text" id="consumoC" class="consumo" placeholder="Energía consumida en el mes" readonly />
-      </section>
+      <!-- Medidor C -->
+      <label class="subseccion">Lectura del Medidor C</label>
+      <div class="grupo-lecturas">
+        <input type="number" placeholder="Anterior" id="anteriorC" required />
+        <input type="number" placeholder="Actual" id="actualC" required />
+      </div>
+      <input type="text" id="consumoC" class="campo-consumo" placeholder="Consumo del mes" readonly />
 
       <button type="submit" id="calcular">Calcular pagos de luz</button>
     </form>
   </main>
 
-  <!-- Modal -->
-  <div id="modal" class="modal oculto">
-    <div class="modal-contenido">
-      <h2>Resumen del Reparto del Pago de Luz</h2>
-      <p id="periodo"></p>
-      <p id="fechaHora"></p>
-      <table>
-        <thead>
-          <tr>
-            <th><i class="fas fa-home"></i></th>
-            <th><i class="fas fa-bolt"></i></th>
-            <th><i class="fas fa-percent"></i></th>
-            <th><i class="fas fa-coins"></i></th>
-          </tr>
-        </thead>
-        <tbody id="tablaResultados"></tbody>
-      </table>
-      <button id="cerrarModal">Cerrar</button>
-    </div>
-  </div>
+  <script src="script.js"></script>
 </body>
 </html>
