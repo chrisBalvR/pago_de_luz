@@ -3,170 +3,115 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f7fa;
-  color: #333;
+  background-color: #f4f4f4;
   padding: 1rem;
 }
 
-.contenedor-principal {
-  max-width: 600px;
+.contenedor {
+  max-width: 500px;
   margin: auto;
   background-color: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-h1 {
-  font-size: 1.8rem;
-  margin-bottom: 0.25rem;
+.titulo {
   text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
 }
 
 .subtitulo {
-  font-size: 0.9rem;
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #666;
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 1.2rem;
+  white-space: nowrap;
 }
 
-form label {
-  display: block;
-  margin-top: 1.5rem;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.etiqueta {
   font-weight: 600;
+  font-size: 1rem;
 }
 
 input[type="number"],
 input[type="text"] {
   width: 100%;
-  padding: 0.6rem;
-  margin-top: 0.3rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   font-size: 1rem;
 }
 
-.campos-lectura {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+input[type="text"].campo-consumo {
+  background-color: #e5f3ff;
+  font-weight: normal;
+  font-style: italic;
 }
 
-.campos-lectura input {
+.grupo-lecturas {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.grupo-lecturas input {
   flex: 1;
 }
 
-.consumo {
-  margin-top: 0.5rem;
-  background-color: #f0f8ff;
-  font-weight: bold;
-  color: #0077cc;
-  text-align: center;
+.subseccion {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #ddd;
+  margin: 1rem 0;
 }
 
 button {
-  margin-top: 2rem;
-  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
   padding: 0.8rem;
   font-size: 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #0077cc;
-  color: white;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #005fa3;
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal.oculto {
-  display: none;
-}
-
-.modal-contenido {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
-}
-
-.modal-contenido h2 {
-  margin-bottom: 1rem;
-}
-
-#periodo,
-#fechaHora {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #444;
-}
-
-table {
-  width: 100%;
-  margin: 1rem 0;
-  border-collapse: collapse;
-}
-
-thead th {
-  font-size: 1.2rem;
-  color: #0077cc;
-  padding-bottom: 0.5rem;
-}
-
-tbody tr {
-  border-bottom: 1px solid #ccc;
-}
-
-tbody td {
-  padding: 0.6rem 0;
-  font-size: 1rem;
+  background-color: #0056b3;
 }
 
 @media (max-width: 500px) {
-  .campos-lectura {
-    flex-direction: column;
+  .titulo {
+    font-size: 1.4rem;
   }
 
-  thead th i {
-    font-size: 1rem;
+  .subtitulo {
+    font-size: 0.8rem;
   }
 
-  tbody td {
-    font-size: 0.9rem;
+  .subseccion {
+    font-size: 0.95rem;
   }
 
-  .modal-contenido {
-    padding: 1rem;
+  input[type="text"].campo-consumo::placeholder {
+    font-size: 0.85rem;
   }
-}
-
-/* Ícono porcentaje personalizado */
-.icon-percent {
-  color: #0077cc;
-  font-size: 1.2rem;
 }
