@@ -168,19 +168,19 @@ inputs.calcular.addEventListener("click", (e) => {
       </thead>
       <tbody>
         <tr>
-          <td>Medidor A</td>
+          <td>A</td>
           <td>${consumo.A} kWh</td>
           <td>${porcentajes.A}%</td>
           <td>S/ ${montoA.toFixed(2)}</td>
         </tr>
         <tr>
-          <td>Medidor B</td>
+          <td>B</td>
           <td>${consumo.B} kWh</td>
           <td>${porcentajes.B}%</td>
           <td>S/ ${montoB.toFixed(2)}</td>
         </tr>
         <tr>
-          <td>Medidor C</td>
+          <td>C</td>
           <td>${consumo.C} kWh</td>
           <td>${porcentajes.C}%</td>
           <td>S/ ${montoC.toFixed(2)}</td>
