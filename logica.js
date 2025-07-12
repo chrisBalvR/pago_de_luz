@@ -16,7 +16,6 @@ const inputs = {
 const modal = document.getElementById("resultadoModal");
 const modalBody = document.querySelector(".modal-body");
 
-// === FORMATO AUTOMÁTICO AL SALIR DEL CAMPO MONTO ===
 inputs.monto.addEventListener("blur", () => {
   let valor = parseFloat(inputs.monto.value);
   if (!isNaN(valor) && valor > 0) {
@@ -24,7 +23,6 @@ inputs.monto.addEventListener("blur", () => {
   }
 });
 
-// === FUNCIONES DE APOYO ===
 function calcularConsumo(anterior, actual) {
   const consumo = Math.round(parseFloat(actual)) - Math.round(parseFloat(anterior));
   return isNaN(consumo) || consumo < 0 ? 0 : consumo;
@@ -35,10 +33,7 @@ function redondearDosDecimales(num) {
 }
 
 function obtenerPeriodoActual() {
-  const meses = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
+  const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
   const ahora = new Date();
   const mes = ahora.getMonth();
   const anio = ahora.getFullYear();
@@ -49,14 +44,9 @@ function obtenerPeriodoActual() {
 
 function obtenerFechaHora() {
   const ahora = new Date();
-  return ahora.toLocaleDateString('es-PE', {
-    day: 'numeric', month: 'long', year: 'numeric'
-  }) + ' - ' + ahora.toLocaleTimeString('es-PE', {
-    hour: 'numeric', minute: '2-digit', hour12: true
-  });
+  return ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }) + ' - ' + ahora.toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
-// === EVENTOS DE CÁLCULO DE CONSUMO AUTOMÁTICO ===
 ['anteriorA','actualA','anteriorB','actualB','anteriorC','actualC'].forEach(id => {
   inputs[id].addEventListener('input', () => {
     const a = calcularConsumo(inputs.anteriorA.value, inputs.actualA.value);
@@ -69,7 +59,6 @@ function obtenerFechaHora() {
   });
 });
 
-// === EVENTO PRINCIPAL: CALCULAR PAGOS ===
 inputs.calcular.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -82,23 +71,20 @@ inputs.calcular.addEventListener("click", function (e) {
   const consumo = {
     A: calcularConsumo(inputs.anteriorA.value, inputs.actualA.value),
     B: calcularConsumo(inputs.anteriorB.value, inputs.actualB.value),
-    C: calcularConsumo(inputs.anteriorC.value, inputs.actualC.value),
+    C: calcularConsumo(inputs.anteriorC.value, inputs.actualC.value)
   };
 
   const totalConsumo = consumo.A + consumo.B + consumo.C;
-
   if (totalConsumo === 0) {
     alert("Los consumos registrados no son válidos. Verifica las lecturas.");
     return;
   }
 
-  // LÓGICA DE COMISIÓN
   let comision = 0;
   const elegibles = [consumo.A >= 2, consumo.B >= 2];
   const aportantes = elegibles.filter(Boolean).length;
   if (aportantes > 0) comision = 1;
 
-  // DISTRIBUCIÓN DEL MONTO (incluyendo comisión)
   const montoSinComision = montoTotal - comision;
   const reparto = {};
   let acumulado = 0;
@@ -108,10 +94,8 @@ inputs.calcular.addEventListener("click", function (e) {
     acumulado += reparto[key];
   });
 
-  // Medidor C paga el resto
   reparto.C = redondearDosDecimales(montoTotal - acumulado);
 
-  // === GENERAR MODAL ===
   let tablaHTML = `
     <h3 class="modal-title">Resumen del Reparto del Pago de Luz</h3>
     <p class="modal-periodo">${obtenerPeriodoActual()}</p>
@@ -126,7 +110,7 @@ inputs.calcular.addEventListener("click", function (e) {
         </tr>
       </thead>
       <tbody>
-        ${["A","B","C"].map(key => `
+        ${["A", "B", "C"].map(key => `
           <tr>
             <td>Medidor ${key}</td>
             <td>${consumo[key]} kWh</td>
