@@ -4,53 +4,57 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consumo Eléctrico</title>
+
+  <!-- Íconos Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="estilos.css" />
-  <script src="https://kit.fontawesome.com/a2c3f9d87a.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <main class="contenedor">
+  <div class="contenedor">
     <h1>Consumo Eléctrico</h1>
     <p class="subtitulo">Suministro 1943683 - Jr. Baritina 450</p>
 
-    <label for="monto">Monto del recibo (S/):</label>
-    <input type="number" id="monto" placeholder="Ingrese el monto" />
+    <form>
+      <label for="monto">Monto del recibo (S/):</label>
+      <input type="number" id="monto" placeholder="Ingrese el monto" step="0.01" />
 
-    <hr />
+      <hr />
 
-    <!-- MEDIDOR A -->
-    <label>Lectura del Medidor A:</label>
-    <div class="grupo-lectura">
-      <input type="number" id="anteriorA" placeholder="Anterior" />
-      <input type="number" id="actualA" placeholder="Actual" />
-    </div>
-    <input type="text" id="consumoA" class="campo-consumo" placeholder="Consumo (kWh)" readonly />
-    <hr />
+      <!-- Medidor A -->
+      <label>Lectura del Medidor A:</label>
+      <div class="lecturas">
+        <input type="number" id="anteriorA" placeholder="Anterior" />
+        <input type="number" id="actualA" placeholder="Actual" />
+      </div>
+      <input type="text" id="consumoA" placeholder="Consumo (kWh)" readonly />
 
-    <!-- MEDIDOR B -->
-    <label>Lectura del Medidor B:</label>
-    <div class="grupo-lectura">
-      <input type="number" id="anteriorB" placeholder="Anterior" />
-      <input type="number" id="actualB" placeholder="Actual" />
-    </div>
-    <input type="text" id="consumoB" class="campo-consumo" placeholder="Consumo (kWh)" readonly />
-    <hr />
+      <hr />
 
-    <!-- MEDIDOR C -->
-    <label>Lectura del Medidor C:</label>
-    <div class="grupo-lectura">
-      <input type="number" id="anteriorC" placeholder="Anterior" />
-      <input type="number" id="actualC" placeholder="Actual" />
-    </div>
-    <input type="text" id="consumoC" class="campo-consumo" placeholder="Consumo (kWh)" readonly />
+      <!-- Medidor B -->
+      <label>Lectura del Medidor B:</label>
+      <div class="lecturas">
+        <input type="number" id="anteriorB" placeholder="Anterior" />
+        <input type="number" id="actualB" placeholder="Actual" />
+      </div>
+      <input type="text" id="consumoB" placeholder="Consumo (kWh)" readonly />
 
-    <button id="calcular">Calcular pagos de luz</button>
-  </main>
+      <hr />
 
-  <!-- MODAL -->
-  <div id="resultadoModal" class="modal">
-    <div class="modal-body"></div>
+      <!-- Medidor C -->
+      <label>Lectura del Medidor C:</label>
+      <div class="lecturas">
+        <input type="number" id="anteriorC" placeholder="Anterior" />
+        <input type="number" id="actualC" placeholder="Actual" />
+      </div>
+      <input type="text" id="consumoC" placeholder="Consumo (kWh)" readonly />
+
+      <button id="calcular">Calcular pagos de luz</button>
+    </form>
   </div>
 
-  <script src="logica.js"></script>
-</body>
-</html>
+  <!-- Modal -->
+  <div class="modal" id="resultadoModal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="document.getElementById(
