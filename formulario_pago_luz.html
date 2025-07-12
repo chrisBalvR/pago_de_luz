@@ -4,65 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consumo Eléctrico</title>
-
-  <!-- Íconos Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="estilos.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="contenedor">
+  <main class="contenedor">
     <h1>Consumo Eléctrico</h1>
     <p class="subtitulo">Suministro 1943683 - Jr. Baritina 450</p>
 
-    <form>
+    <form id="formulario">
       <label for="monto">Monto del recibo (S/):</label>
-      <input type="number" id="monto" placeholder="Ingrese el monto" step="0.01" />
+      <input type="number" id="monto" placeholder="Ingrese el monto" />
 
       <hr />
 
-      <!-- Medidor A -->
-      <label>Lectura del Medidor A:</label>
-      <div class="lecturas">
-        <input type="number" id="anteriorA" placeholder="Anterior" />
-        <input type="number" id="actualA" placeholder="Actual" />
-      </div>
-      <input type="text" id="consumoA" placeholder="Consumo (kWh)" readonly />
+      <section class="bloque-medidor">
+        <label for="anteriorA">Lectura del Medidor A:</label>
+        <div class="lecturas">
+          <input type="number" id="anteriorA" placeholder="Anterior" />
+          <input type="number" id="actualA" placeholder="Actual" />
+        </div>
+        <input type="text" id="consumoA" placeholder="kWh consumidos" readonly />
+        <p id="mensajeA" class="mensaje-error"></p>
+      </section>
 
       <hr />
 
-      <!-- Medidor B -->
-      <label>Lectura del Medidor B:</label>
-      <div class="lecturas">
-        <input type="number" id="anteriorB" placeholder="Anterior" />
-        <input type="number" id="actualB" placeholder="Actual" />
-      </div>
-      <input type="text" id="consumoB" placeholder="Consumo (kWh)" readonly />
+      <section class="bloque-medidor">
+        <label for="anteriorB">Lectura del Medidor B:</label>
+        <div class="lecturas">
+          <input type="number" id="anteriorB" placeholder="Anterior" />
+          <input type="number" id="actualB" placeholder="Actual" />
+        </div>
+        <input type="text" id="consumoB" placeholder="kWh consumidos" readonly />
+        <p id="mensajeB" class="mensaje-error"></p>
+      </section>
 
       <hr />
 
-      <!-- Medidor C -->
-      <label>Lectura del Medidor C:</label>
-      <div class="lecturas">
-        <input type="number" id="anteriorC" placeholder="Anterior" />
-        <input type="number" id="actualC" placeholder="Actual" />
-      </div>
-      <input type="text" id="consumoC" placeholder="Consumo (kWh)" readonly />
+      <section class="bloque-medidor">
+        <label for="anteriorC">Lectura del Medidor C:</label>
+        <div class="lecturas">
+          <input type="number" id="anteriorC" placeholder="Anterior" />
+          <input type="number" id="actualC" placeholder="Actual" />
+        </div>
+        <input type="text" id="consumoC" placeholder="kWh consumidos" readonly />
+        <p id="mensajeC" class="mensaje-error"></p>
+      </section>
 
-      <button id="calcular">Calcular pagos de luz</button>
+      <button id="calcular" type="submit">Calcular pagos de luz</button>
     </form>
-  </div>
+  </main>
 
-  <!-- Modal -->
-  <div class="modal" id="resultadoModal">
+  <div id="resultadoModal" class="modal">
     <div class="modal-contenido">
-      <span class="cerrar" onclick="document.getElementById('resultadoModal').classList.remove('mostrar')">&times;</span>
-      <div class="modal-body"></div>
+      <span id="cerrarModal" class="cerrar">&times;</span>
+      <div class="modal-body">
+        <!-- Aquí se insertará dinámicamente el resultado -->
+      </div>
     </div>
   </div>
 
-  <!-- Lógica JS -->
   <script src="logica.js"></script>
 </body>
 </html>
