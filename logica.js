@@ -1,4 +1,3 @@
-
 // === VARIABLES DOM ===
 const inputs = {
   monto: document.getElementById("monto"),
