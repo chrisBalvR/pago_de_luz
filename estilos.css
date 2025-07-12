@@ -1,117 +1,148 @@
-/* Reset básico */
+/* === RESET BÁSICO === */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
 }
-
 body {
-  background-color: #f4f4f4;
-  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
 }
 
+/* === CONTENEDOR === */
 .contenedor {
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
-.titulo {
-  text-align: center;
+h1 {
   font-size: 1.8rem;
-  margin-bottom: 0.2rem;
-  white-space: nowrap;
+  text-align: center;
+  margin-bottom: 5px;
 }
-
 .subtitulo {
   text-align: center;
   font-size: 0.9rem;
-  color: #444;
-  margin-bottom: 1.2rem;
-  white-space: nowrap;
+  color: #666;
+  margin-bottom: 20px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+label {
+  display: block;
+  margin: 15px 0 5px;
+  font-size: 0.95rem;
 }
-
-.etiqueta {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-input[type="number"],
-input[type="text"] {
+input[type="number"], input[type="text"] {
   width: 100%;
-  padding: 0.5rem;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
 }
-
-input[type="text"].campo-consumo {
-  background-color: #e5f3ff;
-  font-weight: normal;
-  font-style: italic;
+input[readonly] {
+  background-color: #e7f3ff;
 }
 
-.grupo-lecturas {
+.grupo-lectura {
   display: flex;
-  gap: 0.5rem;
+  gap: 10px;
 }
-
-.grupo-lecturas input {
+.grupo-lectura input {
   flex: 1;
-}
-
-.subseccion {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #333;
 }
 
 hr {
   border: none;
-  height: 1px;
-  background-color: #ddd;
-  margin: 1rem 0;
+  border-top: 1px solid #ddd;
+  margin: 15px 0;
 }
 
 button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 0.8rem;
-  font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  margin-top: 20px;
 }
-
 button:hover {
   background-color: #0056b3;
 }
 
-@media (max-width: 500px) {
-  .titulo {
+/* === MODAL === */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal.mostrar {
+  display: flex;
+}
+.modal-body {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90%;
+  width: 500px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.modal-title {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+.modal-periodo,
+.modal-fecha {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.tabla-modal {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.tabla-modal th,
+.tabla-modal td {
+  padding: 8px;
+  text-align: center;
+}
+.tabla-modal tbody tr:not(:last-child) {
+  border-bottom: 1px solid #ddd;
+}
+.icon-percent {
+  color: #007bff;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+  h1 {
     font-size: 1.4rem;
   }
-
-  .subtitulo {
-    font-size: 0.8rem;
+  .grupo-lectura {
+    flex-direction: column;
   }
-
-  .subseccion {
+  input[type="number"], input[type="text"] {
     font-size: 0.95rem;
   }
-
-  input[type="text"].campo-consumo::placeholder {
-    font-size: 0.85rem;
+  .modal-body {
+    padding: 15px;
   }
 }
