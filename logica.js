@@ -13,9 +13,17 @@ const inputs = {
   calcular: document.getElementById("calcular")
 };
 
+// === FORMATO AUTOMÁTICO AL SALIR DEL CAMPO MONTO ===
+inputs.monto.addEventListener("blur", () => {
+  let valor = parseFloat(inputs.monto.value);
+  if (!isNaN(valor) && valor > 0) {
+    inputs.monto.value = valor.toFixed(2);
+  }
+});
+
 // === FUNCIONES DE APOYO ===
 function calcularConsumo(anterior, actual) {
-  const consumo = parseInt(actual) - parseInt(anterior);
+  const consumo = Math.round(parseFloat(actual)) - Math.round(parseFloat(anterior));
   return isNaN(consumo) || consumo < 0 ? 0 : consumo;
 }
 
@@ -63,6 +71,11 @@ inputs.calcular.addEventListener("click", function (e) {
   e.preventDefault();
 
   const montoTotal = parseFloat(inputs.monto.value);
+  if (isNaN(montoTotal) || montoTotal <= 0) {
+    alert("Por favor, ingresa un monto válido mayor a cero.");
+    return;
+  }
+
   const consumo = {
     A: calcularConsumo(inputs.anteriorA.value, inputs.actualA.value),
     B: calcularConsumo(inputs.anteriorB.value, inputs.actualB.value),
@@ -71,28 +84,27 @@ inputs.calcular.addEventListener("click", function (e) {
 
   const totalConsumo = consumo.A + consumo.B + consumo.C;
 
-  if (totalConsumo === 0 || isNaN(montoTotal)) {
-    alert("Por favor, ingresa datos válidos.");
+  if (totalConsumo === 0) {
+    alert("Los consumos registrados no son válidos. Verifica las lecturas.");
     return;
   }
 
   // LÓGICA DE COMISIÓN
-  let comision = 1; // valor tentativo base
+  let comision = 0;
   const elegibles = [consumo.A >= 2, consumo.B >= 2];
   const aportantes = elegibles.filter(Boolean).length;
-
-  if (aportantes === 2) comision = 1;
-  else if (aportantes === 1) comision = 1;
-  else comision = 0;
+  if (aportantes > 0) comision = 1;
 
   // DISTRIBUCIÓN DEL MONTO (incluyendo comisión)
   const montoSinComision = montoTotal - comision;
   const reparto = {};
   let acumulado = 0;
+
   ["A", "B"].forEach(key => {
     reparto[key] = consumo[key] > 0 ? redondearDosDecimales((consumo[key] / totalConsumo) * montoSinComision) : 0;
     acumulado += reparto[key];
   });
+
   // Medidor C paga el resto
   reparto.C = redondearDosDecimales(montoTotal - acumulado);
 
