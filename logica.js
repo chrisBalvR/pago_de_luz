@@ -1,146 +1,105 @@
-// Elementos del DOM
-const formulario = document.getElementById('formulario');
-const montoInput = document.getElementById('monto');
-const anteriorA = document.getElementById('anteriorA');
-const actualA = document.getElementById('actualA');
-const consumoA = document.getElementById('consumoA');
-const anteriorB = document.getElementById('anteriorB');
-const actualB = document.getElementById('actualB');
-const consumoB = document.getElementById('consumoB');
-const anteriorC = document.getElementById('anteriorC');
-const actualC = document.getElementById('actualC');
-const consumoC = document.getElementById('consumoC');
-const modal = document.getElementById('modal');
-const periodoTexto = document.getElementById('periodo');
-const fechaHora = document.getElementById('fechaHora');
-const tablaResultados = document.getElementById('tablaResultados');
-const cerrarModal = document.getElementById('cerrarModal');
+// === VARIABLES DOM ===
+const inputs = {
+  monto: document.getElementById("monto"),
+  anteriorA: document.getElementById("anteriorA"),
+  actualA: document.getElementById("actualA"),
+  consumoA: document.getElementById("consumoA"),
+  anteriorB: document.getElementById("anteriorB"),
+  actualB: document.getElementById("actualB"),
+  consumoB: document.getElementById("consumoB"),
+  anteriorC: document.getElementById("anteriorC"),
+  actualC: document.getElementById("actualC"),
+  consumoC: document.getElementById("consumoC"),
+  calcular: document.getElementById("calcular")
+};
 
-// Autoformatear monto con 2 decimales
-montoInput.addEventListener('blur', () => {
-  let valor = parseFloat(montoInput.value);
-  if (!isNaN(valor)) {
-    montoInput.value = valor.toFixed(2);
-  }
+// === FUNCIONES DE APOYO ===
+function calcularConsumo(anterior, actual) {
+  const consumo = parseInt(actual) - parseInt(anterior);
+  return isNaN(consumo) || consumo < 0 ? 0 : consumo;
+}
+
+function redondearDosDecimales(num) {
+  return Math.round(num * 100) / 100;
+}
+
+function obtenerPeriodoActual() {
+  const meses = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  const ahora = new Date();
+  const mes = ahora.getMonth();
+  const anio = ahora.getFullYear();
+  const mesInicio = meses[(mes - 1 + 12) % 12];
+  const mesFin = meses[mes];
+  return `${mesInicio} - ${mesFin} de ${anio}`;
+}
+
+function obtenerFechaHora() {
+  const ahora = new Date();
+  return ahora.toLocaleDateString('es-PE', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  }) + ' - ' + ahora.toLocaleTimeString('es-PE', {
+    hour: 'numeric', minute: '2-digit', hour12: true
+  });
+}
+
+// === EVENTOS DE CÁLCULO DE CONSUMO AUTOMÁTICO ===
+['anteriorA','actualA','anteriorB','actualB','anteriorC','actualC'].forEach(id => {
+  inputs[id].addEventListener('input', () => {
+    const a = calcularConsumo(inputs.anteriorA.value, inputs.actualA.value);
+    const b = calcularConsumo(inputs.anteriorB.value, inputs.actualB.value);
+    const c = calcularConsumo(inputs.anteriorC.value, inputs.actualC.value);
+
+    inputs.consumoA.value = a > 0 ? `${a} kWh` : '';
+    inputs.consumoB.value = b > 0 ? `${b} kWh` : '';
+    inputs.consumoC.value = c > 0 ? `${c} kWh` : '';
+  });
 });
 
-// Calcular consumo por medidor
-function calcularConsumo(anterior, actual, campo) {
-  const val1 = parseFloat(anterior.value);
-  const val2 = parseFloat(actual.value);
-  if (!isNaN(val1) && !isNaN(val2)) {
-    const consumo = Math.max(val2 - val1, 0);
-    const redondeado = Math.round(consumo);
-    campo.value = `${redondeado} kWh consumidos`;
-    return redondeado;
-  }
-  campo.value = "";
-  return 0;
-}
-
-// Eventos para cálculos automáticos
-[anteriorA, actualA].forEach(input => input.addEventListener('input', () => calcularConsumo(anteriorA, actualA, consumoA)));
-[anteriorB, actualB].forEach(input => input.addEventListener('input', () => calcularConsumo(anteriorB, actualB, consumoB)));
-[anteriorC, actualC].forEach(input => input.addEventListener('input', () => calcularConsumo(anteriorC, actualC, consumoC)));
-
-// Cálculo del período automático
-function obtenerPeriodoActual() {
-  const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
-  const hoy = new Date();
-  const mesActual = hoy.getMonth();
-  const año = hoy.getFullYear();
-  const mesAnterior = mesActual === 0 ? 11 : mesActual - 1;
-  const añoPeriodo = mesActual === 0 ? año - 1 : año;
-  return `${meses[mesAnterior]} - ${meses[mesActual]} de ${añoPeriodo}`;
-}
-
-function obtenerFechaHoraActual() {
-  const hoy = new Date();
-  return hoy.toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
-}
-
-function redondearADecimo(valor) {
-  return Math.round(valor * 10) / 10;
-}
-
-// Lógica principal del formulario
-formulario.addEventListener('submit', (e) => {
+// === EVENTO PRINCIPAL: CALCULAR PAGOS ===
+inputs.calcular.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const total = parseFloat(montoInput.value);
-  if (isNaN(total) || total <= 0) return alert("Ingrese un monto válido.");
-
-  const consumoValores = {
-    A: calcularConsumo(anteriorA, actualA, consumoA),
-    B: calcularConsumo(anteriorB, actualB, consumoB),
-    C: calcularConsumo(anteriorC, actualC, consumoC)
+  const montoTotal = parseFloat(inputs.monto.value);
+  const consumo = {
+    A: calcularConsumo(inputs.anteriorA.value, inputs.actualA.value),
+    B: calcularConsumo(inputs.anteriorB.value, inputs.actualB.value),
+    C: calcularConsumo(inputs.anteriorC.value, inputs.actualC.value),
   };
 
-  const sumaTotal = consumoValores.A + consumoValores.B + consumoValores.C;
+  const totalConsumo = consumo.A + consumo.B + consumo.C;
 
-  if (sumaTotal === 0) return alert("Todos los consumos son cero.");
-
-  // Comisión tentativa de S/1 - considerando consumos redondeados
-  const pagaA = consumoValores.A >= 2;
-  const pagaB = consumoValores.B >= 2;
-  let comisionTentativa = 1;
-  let descuentoC = 0;
-
-  if (pagaA && pagaB) descuentoC = comisionTentativa / 2;
-  else if (pagaA || pagaB) descuentoC = comisionTentativa;
-
-  // Reparto proporcional inicial
-  const preliminar = {};
-  let redondeado = {};
-  let totalRedondeado = 0;
-
-  for (let medidor in consumoValores) {
-    const consumo = consumoValores[medidor];
-    const porcentaje = consumo / sumaTotal;
-    let pago = porcentaje * total;
-    if (medidor === 'C') pago -= descuentoC;
-    if (pago < 0) pago = 0;
-    preliminar[medidor] = {
-      consumo: consumo,
-      porcentaje: (porcentaje * 100).toFixed(0),
-      pagoReal: pago
-    };
-    redondeado[medidor] = redondearADecimo(pago);
-    totalRedondeado += redondeado[medidor];
+  if (totalConsumo === 0 || isNaN(montoTotal)) {
+    alert("Por favor, ingresa datos válidos.");
+    return;
   }
 
-  // Ajustar si hay diferencia para cuadrar con el monto total
-  let diferencia = Math.round((total - totalRedondeado) * 100) / 100;
+  // LÓGICA DE COMISIÓN
+  let comision = 1; // valor tentativo base
+  const elegibles = [consumo.A >= 2, consumo.B >= 2];
+  const aportantes = elegibles.filter(Boolean).length;
 
-  if (diferencia !== 0) {
-    const orden = Object.keys(preliminar).sort((a, b) => preliminar[b].pagoReal - preliminar[a].pagoReal);
-    for (let medidor of orden) {
-      let ajuste = redondearADecimo(redondeado[medidor] + diferencia);
-      if (ajuste >= 0) {
-        redondeado[medidor] = ajuste;
-        break;
-      }
-    }
-  }
+  if (aportantes === 2) comision = 1;
+  else if (aportantes === 1) comision = 1;
+  else comision = 0;
 
-  // Mostrar en tabla
-  tablaResultados.innerHTML = "";
-  for (let medidor of ['A', 'B', 'C']) {
-    const fila = document.createElement('tr');
-    fila.innerHTML = `
-      <td>${medidor}</td>
-      <td>${preliminar[medidor].consumo} kWh</td>
-      <td>${preliminar[medidor].porcentaje} %</td>
-      <td>S/ ${redondeado[medidor].toFixed(2)}</td>
-    `;
-    tablaResultados.appendChild(fila);
-  }
+  // DISTRIBUCIÓN DEL MONTO (incluyendo comisión)
+  const montoSinComision = montoTotal - comision;
+  const reparto = {};
+  let acumulado = 0;
+  ["A", "B"].forEach(key => {
+    reparto[key] = consumo[key] > 0 ? redondearDosDecimales((consumo[key] / totalConsumo) * montoSinComision) : 0;
+    acumulado += reparto[key];
+  });
+  // Medidor C paga el resto
+  reparto.C = redondearDosDecimales(montoTotal - acumulado);
 
-  periodoTexto.textContent = obtenerPeriodoActual();
-  fechaHora.textContent = obtenerFechaHoraActual();
-  modal.classList.remove('oculto');
-});
-
-cerrarModal.addEventListener('click', () => {
-  modal.classList.add('oculto');
+  // Mostrar datos en consola (temporal)
+  console.log("Periodo:", obtenerPeriodoActual());
+  console.log("Fecha y hora:", obtenerFechaHora());
+  console.log("Consumos:", consumo);
+  console.log("Reparto:", reparto);
+  console.log("Comisión aplicada:", comision);
 });
