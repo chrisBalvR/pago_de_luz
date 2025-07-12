@@ -3,62 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consumo Eléctrico</title>
-
-  <!-- Enlace a CSS -->
+  <title>Calculadora de Luz - Reparto entre Departamentos</title>
   <link rel="stylesheet" href="estilos.css" />
-
-  <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <script src="https://kit.fontawesome.com/tu_codigo_fontawesome.js" crossorigin="anonymous"></script>
 </head>
-
 <body>
-  <div class="contenedor">
-    <h1>Consumo Eléctrico</h1>
-    <p class="subtitulo">Suministro 1943683 <br> Jr. Baritina 450</p>
+  <main class="contenedor">
+    <h1>Reparto de Pago de Luz</h1>
 
-    <form id="formulario">
+    <section class="seccion">
       <label for="monto">Monto del recibo (S/):</label>
-      <input type="number" id="monto" placeholder="Ingrese el monto" step="0.1" min="0" required />
-      <hr>
+      <input type="number" id="monto" step="0.1" placeholder="Ej: 120.50" />
+    </section>
 
-      <!-- MEDIDOR A -->
-      <label class="label-medidor" for="anteriorA">Lectura del Medidor A:</label>
-      <div class="grupo-lecturas">
-        <input type="number" id="anteriorA" placeholder="Anterior" />
-        <input type="number" id="actualA" placeholder="Actual" />
-      </div>
-      <input type="text" id="consumoA" class="consumo" readonly placeholder="Consumo (kWh)" />
-      <hr>
+    <hr />
 
-      <!-- MEDIDOR B -->
-      <label class="label-medidor" for="anteriorB">Lectura del Medidor B:</label>
-      <div class="grupo-lecturas">
-        <input type="number" id="anteriorB" placeholder="Anterior" />
-        <input type="number" id="actualB" placeholder="Actual" />
+    <section class="seccion">
+      <div class="medidor" data-medidor="A">
+        <h3>Lecturas de Medidor A</h3>
+        <div class="fila-medidor">
+          <input type="number" class="anterior" placeholder="Anterior" />
+          <input type="number" class="actual" placeholder="Actual" />
+          <input type="text" class="consumo" value="0 kWh" readonly />
+        </div>
+        <p class="mensaje"></p>
       </div>
-      <input type="text" id="consumoB" class="consumo" readonly placeholder="Consumo (kWh)" />
-      <hr>
 
-      <!-- MEDIDOR C -->
-      <label class="label-medidor" for="anteriorC">Lectura del Medidor C:</label>
-      <div class="grupo-lecturas">
-        <input type="number" id="anteriorC" placeholder="Anterior" />
-        <input type="number" id="actualC" placeholder="Actual" />
+      <div class="medidor" data-medidor="B">
+        <h3>Lecturas de Medidor B</h3>
+        <div class="fila-medidor">
+          <input type="number" class="anterior" placeholder="Anterior" />
+          <input type="number" class="actual" placeholder="Actual" />
+          <input type="text" class="consumo" value="0 kWh" readonly />
+        </div>
+        <p class="mensaje"></p>
       </div>
-      <input type="text" id="consumoC" class="consumo" readonly placeholder="Consumo (kWh)" />
-      <button id="calcular">Calcular pagos de luz</button>
-    </form>
-  </div>
+
+      <div class="medidor" data-medidor="C">
+        <h3>Lecturas de Medidor C</h3>
+        <div class="fila-medidor">
+          <input type="number" class="anterior" placeholder="Anterior" />
+          <input type="number" class="actual" placeholder="Actual" />
+          <input type="text" class="consumo" value="0 kWh" readonly />
+        </div>
+        <p class="mensaje"></p>
+      </div>
+    </section>
+
+    <hr />
+
+    <button id="btnCalcular">Calcular pagos de luz</button>
+  </main>
 
   <!-- MODAL -->
-  <div id="resultadoModal" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" id="cerrarModal">&times;</span>
-      <div class="modal-body"></div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="cerrar-modal" id="cerrarModal">&times;</button>
+      <h2>Resumen del Reparto del Pago de Luz</h2>
+      <p id="periodo" class="periodo-modal"></p>
+      <p id="fechaHora" class="fecha-modal"></p>
+
+      <table class="tabla-resultados">
+        <thead>
+          <tr>
+            <th><i class="fas fa-home" style="color: steelblue;"></i></th>
+            <th><i class="fas fa-bolt" style="color: steelblue;"></i></th>
+            <th><i class="fas fa-percent" style="color: steelblue;"></i></th>
+            <th><i class="fas fa-coins" style="color: steelblue;"></i></th>
+          </tr>
+        </thead>
+        <tbody id="tablaResultados"></tbody>
+      </table>
     </div>
   </div>
 
