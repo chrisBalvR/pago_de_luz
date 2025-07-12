@@ -1,194 +1,137 @@
-// === VARIABLES DOM ===
-const inputs = {
-  monto: document.getElementById("monto"),
-  anteriorA: document.getElementById("anteriorA"),
-  actualA: document.getElementById("actualA"),
-  consumoA: document.getElementById("consumoA"),
-  anteriorB: document.getElementById("anteriorB"),
-  actualB: document.getElementById("actualB"),
-  consumoB: document.getElementById("consumoB"),
-  anteriorC: document.getElementById("anteriorC"),
-  actualC: document.getElementById("actualC"),
-  consumoC: document.getElementById("consumoC"),
-  calcular: document.getElementById("calcular"),
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const montoInput = document.getElementById("monto");
+  const medidores = document.querySelectorAll(".medidor");
+  const btnCalcular = document.getElementById("btnCalcular");
+  const modalOverlay = document.getElementById("modalOverlay");
+  const cerrarModal = document.getElementById("cerrarModal");
+  const tablaResultados = document.getElementById("tablaResultados");
+  const periodo = document.getElementById("periodo");
+  const fechaHora = document.getElementById("fechaHora");
 
-const modal = document.getElementById("resultadoModal");
-const modalBody = document.querySelector(".modal-body");
-const cerrarModal = document.getElementById("cerrarModal");
+  // Formatear monto a una décima máxima
+  montoInput.addEventListener("blur", () => {
+    let valor = parseFloat(montoInput.value);
+    if (!isNaN(valor)) {
+      valor = Math.floor(valor * 10) / 10;
+      montoInput.value = valor.toFixed(2);
+    }
+  });
 
-// CERRAR MODAL
-cerrarModal.addEventListener("click", () => {
-  modal.classList.remove("mostrar");
-});
+  // Calcular consumo automáticamente
+  medidores.forEach(medidor => {
+    const anterior = medidor.querySelector(".anterior");
+    const actual = medidor.querySelector(".actual");
+    const consumoInput = medidor.querySelector(".consumo");
+    const mensaje = medidor.querySelector(".mensaje");
 
-// === VALIDACIÓN Y FORMATO DEL MONTO ===
-inputs.monto.addEventListener("blur", () => {
-  const valor = parseFloat(inputs.monto.value);
-  if (!isNaN(valor) && valor > 0) {
-    const redondeado = Math.floor(valor * 10) / 10;
-    inputs.monto.value = redondeado.toFixed(2);
-  } else {
-    inputs.monto.value = "";
-  }
-});
+    const calcular = () => {
+      const ant = parseInt(anterior.value);
+      const act = parseInt(actual.value);
+      if (!isNaN(ant) && !isNaN(act)) {
+        if (act < ant) {
+          mensaje.textContent = "⚠️ La lectura actual no puede ser menor que la anterior.";
+          consumoInput.value = "0 kWh";
+        } else {
+          const diferencia = act - ant;
+          consumoInput.value = `${diferencia} kWh`;
+          mensaje.textContent = diferencia === 0 ? "ℹ️ No hubo consumo." : "";
+        }
+      } else {
+        consumoInput.value = "0 kWh";
+        mensaje.textContent = "";
+      }
+    };
 
-// === FUNCIONES AUXILIARES ===
-function calcularConsumo(anterior, actual) {
-  const ant = anterior.trim();
-  const act = actual.trim();
+    anterior.addEventListener("input", calcular);
+    actual.addEventListener("input", calcular);
+  });
 
-  if (ant.length === 0 || act.length === 0) return "";
-
-  if (act.length < ant.length) return "";
-
-  const valAnt = parseInt(ant);
-  const valAct = parseInt(act);
-  const diff = valAct - valAnt;
-
-  if (isNaN(diff)) return "";
-  if (diff < 0) return "ERROR";
-
-  return diff === 0 ? "0" : diff.toString();
-}
-
-function redondearMonto(monto) {
-  return (Math.round(monto * 20) / 20).toFixed(2);
-}
-
-function obtenerPeriodoActual() {
-  const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
-  const fecha = new Date();
-  const mesFin = fecha.getMonth();
-  const mesInicio = (mesFin - 1 + 12) % 12;
-  const anio = fecha.getFullYear();
-  return `${meses[mesInicio]} - ${meses[mesFin]} de ${anio}`;
-}
-
-function obtenerFechaHora() {
-  const ahora = new Date();
-  return ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }) +
-    ' - ' +
-    ahora.toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true });
-}
-
-// === EVENTOS DE CAMBIO EN LECTURAS ===
-["anteriorA", "actualA", "anteriorB", "actualB", "anteriorC", "actualC"].forEach(id => {
-  const medidor = id.slice(-1); // A, B o C
-  const consumoInput = document.getElementById("consumo" + medidor);
-
-  inputs[id].addEventListener("input", () => {
-    const anterior = inputs["anterior" + medidor].value;
-    const actual = inputs["actual" + medidor].value;
-    const resultado = calcularConsumo(anterior, actual);
-
-    if (resultado === "ERROR") {
-      consumoInput.value = "";
-      alert(`⚠️ Error: La lectura actual del Medidor ${medidor} no puede ser menor que la anterior.`);
+  // Calcular reparto
+  btnCalcular.addEventListener("click", () => {
+    const monto = parseFloat(montoInput.value);
+    if (isNaN(monto)) {
+      alert("Por favor ingresa el monto del recibo.");
       return;
     }
 
-    if (resultado !== "") {
-      consumoInput.value = `${resultado} kWh`;
-    } else {
-      consumoInput.value = "";
+    const consumos = Array.from(medidores).map(medidor => {
+      const texto = medidor.querySelector(".consumo").value;
+      const numero = parseInt(texto.replace(" kWh", ""));
+      return isNaN(numero) ? 0 : numero;
+    });
+
+    if (consumos.some((c, i) => {
+      const anterior = medidores[i].querySelector(".anterior").value;
+      const actual = medidores[i].querySelector(".actual").value;
+      return actual === "" || anterior === "";
+    })) {
+      alert("Completa todas las lecturas antes de calcular.");
+      return;
+    }
+
+    const totalConsumo = consumos.reduce((a, b) => a + b, 0);
+    if (totalConsumo === 0) {
+      alert("No hay consumo registrado. No se puede calcular.");
+      return;
+    }
+
+    let repartos = consumos.map(c => (c / totalConsumo) * monto);
+
+    // Aplicar comisión si A o B consumieron ≥ 2 kWh
+    const comision = (consumos[0] >= 2 || consumos[1] >= 2) ? 1 : 0;
+    if (comision === 1) {
+      const totalAB = consumos[0] + consumos[1];
+      if (totalAB > 0) {
+        const prorrateoA = (consumos[0] / totalAB) * comision;
+        const prorrateoB = (consumos[1] / totalAB) * comision;
+        repartos[0] += prorrateoA;
+        repartos[1] += prorrateoB;
+        repartos[2] -= comision;
+      }
+    }
+
+    // Mostrar resultados
+    tablaResultados.innerHTML = "";
+    ["A", "B", "C"].forEach((letra, i) => {
+      const porcentaje = (consumos[i] / totalConsumo) * 100;
+      let montoFinal = Math.ceil(repartos[i] * 10) / 10;
+
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${letra}</td>
+        <td>${consumos[i]} kWh</td>
+        <td>${porcentaje.toFixed(1)}%</td>
+        <td>S/ ${montoFinal.toFixed(2)}</td>
+      `;
+      tablaResultados.appendChild(fila);
+    });
+
+    // Mostrar período
+    const hoy = new Date();
+    const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
+                   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const mesAnterior = hoy.getMonth() === 0 ? 11 : hoy.getMonth() - 1;
+    const año = hoy.getFullYear();
+    periodo.textContent = `${meses[mesAnterior][0].toUpperCase() + meses[mesAnterior].slice(1)} - ${meses[hoy.getMonth()][0].toUpperCase() + meses[hoy.getMonth()].slice(1)} de ${año}`;
+
+    const dia = hoy.getDate();
+    const mes = meses[hoy.getMonth()];
+    const hora = hoy.getHours();
+    const minutos = hoy.getMinutes().toString().padStart(2, "0");
+    const ampm = hora >= 12 ? "pm" : "am";
+    const hora12 = hora % 12 || 12;
+    fechaHora.textContent = `${dia} de ${mes} de ${año} - ${hora12}:${minutos} ${ampm}`;
+
+    modalOverlay.style.display = "flex";
+  });
+
+  cerrarModal.addEventListener("click", () => {
+    modalOverlay.style.display = "none";
+  });
+
+  modalOverlay.addEventListener("click", (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.style.display = "none";
     }
   });
-});
-
-// === EVENTO PRINCIPAL: CALCULAR ===
-inputs.calcular.addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const montoBruto = parseFloat(inputs.monto.value);
-  if (isNaN(montoBruto) || montoBruto <= 0) {
-    alert("⚠️ Ingrese un monto válido.");
-    return;
-  }
-
-  const consumo = {
-    A: parseInt(calcularConsumo(inputs.anteriorA.value, inputs.actualA.value)) || 0,
-    B: parseInt(calcularConsumo(inputs.anteriorB.value, inputs.actualB.value)) || 0,
-    C: parseInt(calcularConsumo(inputs.anteriorC.value, inputs.actualC.value)) || 0,
-  };
-
-  const totalKwh = consumo.A + consumo.B + consumo.C;
-  if (totalKwh === 0) {
-    alert("⚠️ No hay consumo registrado. Verifique las lecturas.");
-    return;
-  }
-
-  // === EVALUACIÓN DE COMISIÓN ===
-  let comision = 0;
-  const pagaComisionA = consumo.A >= 2;
-  const pagaComisionB = consumo.B >= 2;
-
-  if (pagaComisionA && pagaComisionB) comision = 1;
-  else if (pagaComisionA || pagaComisionB) comision = 1;
-  else comision = 0;
-
-  // === CÁLCULO DE MONTOS SIN REDONDEAR ===
-  const montoSinComision = montoBruto - comision;
-  let montoA = (consumo.A / totalKwh) * montoSinComision;
-  let montoB = (consumo.B / totalKwh) * montoSinComision;
-  let montoC = (consumo.C / totalKwh) * montoSinComision;
-
-  // === APLICAR REDONDEO A MÚLTIPLOS DE 0.10 ===
-  montoA = parseFloat(redondearMonto(montoA));
-  montoB = parseFloat(redondearMonto(montoB));
-  montoC = parseFloat(redondearMonto(montoC));
-
-  // === AJUSTAR DIFERENCIA POR REDONDEO ===
-  const suma = montoA + montoB + montoC;
-  const diferencia = (montoBruto - suma).toFixed(2);
-  if (Math.abs(diferencia) >= 0.01) {
-    montoC = parseFloat((montoC + parseFloat(diferencia)).toFixed(2));
-  }
-
-  const porcentajes = {
-    A: Math.round((consumo.A / totalKwh) * 100),
-    B: Math.round((consumo.B / totalKwh) * 100),
-    C: Math.round((consumo.C / totalKwh) * 100),
-  };
-
-  // === CONSTRUIR MODAL ===
-  let tabla = `
-    <h3 class="modal-title">Resumen del Reparto del Pago de Luz</h3>
-    <p class="modal-periodo">${obtenerPeriodoActual()}</p>
-    <p class="modal-fecha">${obtenerFechaHora()}</p>
-
-    <table class="tabla-modal">
-      <thead>
-        <tr>
-          <th><i class="fas fa-home"></i></th>
-          <th><i class="fas fa-bolt"></i></th>
-          <th><i class="fas fa-percent"></i></th>
-          <th><i class="fas fa-coins"></i></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>A</td>
-          <td>${consumo.A} kWh</td>
-          <td>${porcentajes.A}%</td>
-          <td>S/ ${montoA.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>B</td>
-          <td>${consumo.B} kWh</td>
-          <td>${porcentajes.B}%</td>
-          <td>S/ ${montoB.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>C</td>
-          <td>${consumo.C} kWh</td>
-          <td>${porcentajes.C}%</td>
-          <td>S/ ${montoC.toFixed(2)}</td>
-        </tr>
-      </tbody>
-    </table>
-  `;
-
-  modalBody.innerHTML = tabla;
-  modal.classList.add("mostrar");
 });
