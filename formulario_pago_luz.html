@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Luz - Reparto entre Departamentos</title>
+  <title>Consumo Eléctrico</title>
   <link rel="stylesheet" href="estilos.css" />
-  <script src="https://kit.fontawesome.com/tu_codigo_fontawesome.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <main class="contenedor">
-    <h1>Reparto de Pago de Luz</h1>
+    <h1>Consumo Eléctrico</h1>
+    <p class="subtitulo">Suministro 1943683</p>
+    <p class="direccion">Jr. Baritina 450</p>
 
     <section class="seccion">
       <label for="monto">Monto del recibo (S/):</label>
@@ -59,17 +60,17 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" id="modal">
       <button class="cerrar-modal" id="cerrarModal">&times;</button>
-      <h2>Resumen del Reparto del Pago de Luz</h2>
+      <h2 class="titulo-modal">Resumen del Pago de Luz</h2>
       <p id="periodo" class="periodo-modal"></p>
       <p id="fechaHora" class="fecha-modal"></p>
 
       <table class="tabla-resultados">
         <thead>
           <tr>
-            <th><i class="fas fa-home" style="color: steelblue;"></i></th>
-            <th><i class="fas fa-bolt" style="color: steelblue;"></i></th>
-            <th><i class="fas fa-percent" style="color: steelblue;"></i></th>
-            <th><i class="fas fa-coins" style="color: steelblue;"></i></th>
+            <th><span class="emoji">🏠</span></th>
+            <th><span class="emoji">⚡</span></th>
+            <th><span class="emoji">%</span></th>
+            <th><span class="emoji">💰</span></th>
           </tr>
         </thead>
         <tbody id="tablaResultados"></tbody>
