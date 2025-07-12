@@ -2,54 +2,53 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Consumo Eléctrico</title>
   <link rel="stylesheet" href="estilos.css" />
-  <script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/a2d79dcb84.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="contenedor">
-    <h1 class="titulo">Consumo Eléctrico</h1>
-    <p class="subtitulo">Suministro 1943683 - Jr. Baritina 450</p>
+    <h1>Consumo Eléctrico</h1>
+    <p class="subtitulo">Suministro 1943683 <br> Jr. Baritina 450</p>
 
     <form id="formulario">
       <label for="monto">Monto del recibo (S/):</label>
-      <input type="number" id="monto" placeholder="Ingrese el monto" step="0.01" min="0" />
+      <input type="text" id="monto" placeholder="Ingrese el monto" required />
+      <hr>
 
-      <hr />
-
-      <label class="label-medidor">Lectura del Medidor A:</label>
-      <div class="lecturas">
+      <!-- MEDIDOR A -->
+      <label class="label-medidor" for="anteriorA">Lectura del Medidor A:</label>
+      <div class="grupo-lecturas">
         <input type="number" id="anteriorA" placeholder="Anterior" />
         <input type="number" id="actualA" placeholder="Actual" />
       </div>
-      <input type="text" id="consumoA" class="consumo" placeholder="Consumo (kWh)" readonly />
+      <input type="text" id="consumoA" class="consumo" readonly placeholder="Consumo (kWh)" />
+      <hr>
 
-      <hr />
-
-      <label class="label-medidor">Lectura del Medidor B:</label>
-      <div class="lecturas">
+      <!-- MEDIDOR B -->
+      <label class="label-medidor" for="anteriorB">Lectura del Medidor B:</label>
+      <div class="grupo-lecturas">
         <input type="number" id="anteriorB" placeholder="Anterior" />
         <input type="number" id="actualB" placeholder="Actual" />
       </div>
-      <input type="text" id="consumoB" class="consumo" placeholder="Consumo (kWh)" readonly />
+      <input type="text" id="consumoB" class="consumo" readonly placeholder="Consumo (kWh)" />
+      <hr>
 
-      <hr />
-
-      <label class="label-medidor">Lectura del Medidor C:</label>
-      <div class="lecturas">
+      <!-- MEDIDOR C -->
+      <label class="label-medidor" for="anteriorC">Lectura del Medidor C:</label>
+      <div class="grupo-lecturas">
         <input type="number" id="anteriorC" placeholder="Anterior" />
         <input type="number" id="actualC" placeholder="Actual" />
       </div>
-      <input type="text" id="consumoC" class="consumo" placeholder="Consumo (kWh)" readonly />
-
+      <input type="text" id="consumoC" class="consumo" readonly placeholder="Consumo (kWh)" />
       <button id="calcular">Calcular pagos de luz</button>
     </form>
   </div>
 
-  <!-- Modal -->
+  <!-- MODAL -->
   <div id="resultadoModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-contenido">
       <span class="cerrar" id="cerrarModal">&times;</span>
       <div class="modal-body"></div>
     </div>
