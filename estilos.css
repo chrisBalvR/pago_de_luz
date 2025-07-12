@@ -1,148 +1,191 @@
-/* === RESET BÁSICO === */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 body {
-  font-family: 'Segoe UI', sans-serif;
-  padding: 20px;
-  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  background-color: #f2f2f2;
 }
 
-/* === CONTENEDOR === */
 .contenedor {
   max-width: 600px;
   margin: auto;
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 h1 {
   font-size: 1.8rem;
+  margin-bottom: 0.5rem;
   text-align: center;
-  margin-bottom: 5px;
 }
+
 .subtitulo {
+  font-size: 1rem;
   text-align: center;
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
+  color: #333;
 }
 
 label {
+  font-weight: bold;
   display: block;
-  margin: 15px 0 5px;
-  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
 }
-input[type="number"], input[type="text"] {
+
+input[type="number"],
+input[readonly] {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 10px;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 6px;
   font-size: 1rem;
 }
+
 input[readonly] {
-  background-color: #e7f3ff;
+  background-color: #e6f0ff;
+  font-weight: normal;
 }
 
-.grupo-lectura {
+.lecturas {
   display: flex;
-  gap: 10px;
-}
-.grupo-lectura input {
-  flex: 1;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-hr {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 15px 0;
+.lecturas input {
+  width: 100%;
+}
+
+.mensaje-error {
+  font-size: 0.9rem;
+  color: red;
+  margin-bottom: 1rem;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  font-size: 1rem;
+  padding: 0.8rem;
   background-color: #007bff;
   color: white;
+  font-size: 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
 }
+
 button:hover {
   background-color: #0056b3;
 }
 
-/* === MODAL === */
+hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 1rem 0;
+}
+
+/* MODAL */
 .modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
   display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
 }
+
 .modal.mostrar {
-  display: flex;
+  display: block;
 }
-.modal-body {
-  background: white;
-  padding: 20px;
+
+.modal-contenido {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 1.5rem;
   border-radius: 10px;
-  max-width: 90%;
-  width: 500px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
-  text-align: center;
+  max-width: 600px;
+  position: relative;
 }
+
+.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.cerrar:hover {
+  color: black;
+}
+
 .modal-title {
+  text-align: center;
   font-size: 1.3rem;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
 }
-.modal-periodo,
+
+.modal-periodo {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
 .modal-fecha {
-  font-size: 0.9rem;
-  color: #333;
-  margin-bottom: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1rem;
 }
 
 .tabla-modal {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-}
-.tabla-modal th,
-.tabla-modal td {
-  padding: 8px;
   text-align: center;
 }
-.tabla-modal tbody tr:not(:last-child) {
-  border-bottom: 1px solid #ddd;
+
+.tabla-modal th,
+.tabla-modal td {
+  padding: 0.6rem;
 }
-.icon-percent {
+
+.tabla-modal thead {
+  border-bottom: 2px solid #007bff;
+}
+
+.tabla-modal tbody tr {
+  border-bottom: 1px solid #ccc;
+}
+
+.tabla-modal th i {
+  font-size: 1.2rem;
   color: #007bff;
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.4rem;
-  }
-  .grupo-lectura {
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .lecturas {
     flex-direction: column;
   }
-  input[type="number"], input[type="text"] {
-    font-size: 0.95rem;
+
+  input[type="number"],
+  input[readonly] {
+    font-size: 1rem;
   }
-  .modal-body {
-    padding: 15px;
+
+  .modal-contenido {
+    margin: 20% auto;
+    width: 90%;
   }
 }
