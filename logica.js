@@ -28,8 +28,8 @@ function calcularConsumo(anterior, actual) {
   return isNaN(consumo) || consumo < 0 ? 0 : consumo;
 }
 
-function redondearDosDecimales(num) {
-  return Math.round(num * 100) / 100;
+function redondearDecimaSuperior(num) {
+  return Math.ceil(num * 10) / 10;
 }
 
 function obtenerPeriodoActual() {
@@ -80,33 +80,54 @@ inputs.calcular.addEventListener("click", function (e) {
     return;
   }
 
-  let comision = 0;
-  const elegibles = [consumo.A >= 2, consumo.B >= 2];
-  const aportantes = elegibles.filter(Boolean).length;
-  if (aportantes > 0) comision = 1;
-
-  const montoSinComision = montoTotal - comision;
-  const reparto = {};
-  let acumulado = 0;
-
-  ["A", "B"].forEach(key => {
-    reparto[key] = consumo[key] > 0 ? redondearDosDecimales((consumo[key] / totalConsumo) * montoSinComision) : 0;
-    acumulado += reparto[key];
+  // Paso 1: Reparto proporcional sin comisión
+  const repartoBase = {};
+  Object.keys(consumo).forEach(key => {
+    repartoBase[key] = (consumo[key] / totalConsumo) * montoTotal;
   });
 
-  reparto.C = redondearDosDecimales(montoTotal - acumulado);
+  // Paso 2: Evaluación de comisión
+  let comision = 0;
+  const aportantes = [];
+  if (consumo.A >= 2) aportantes.push("A");
+  if (consumo.B >= 2) aportantes.push("B");
+
+  if (aportantes.length === 2) {
+    comision = 1;
+  } else if (aportantes.length === 1) {
+    comision = 1;
+  }
+
+  // Paso 3: Ajustes por comisión
+  const repartoFinal = { ...repartoBase };
+  if (comision > 0) {
+    const ajuste = comision / aportantes.length;
+    aportantes.forEach(key => {
+      repartoFinal[key] += ajuste;
+    });
+    repartoFinal.C -= comision;
+  }
+
+  // Paso 4: Redondeo final
+  const montosRedondeados = {};
+  let sumaTemporal = 0;
+  ["A", "B"].forEach(key => {
+    montosRedondeados[key] = redondearDecimaSuperior(repartoFinal[key]);
+    sumaTemporal += montosRedondeados[key];
+  });
+  montosRedondeados.C = redondearDecimaSuperior(montoTotal - sumaTemporal);
 
   let tablaHTML = `
     <h3 class="modal-title">Resumen del Reparto del Pago de Luz</h3>
-    <p class="modal-periodo">${obtenerPeriodoActual()}</p>
+    <p class="modal-periodo periodo-destacado">${obtenerPeriodoActual()}</p>
     <p class="modal-fecha">${obtenerFechaHora()}</p>
     <table class="tabla-modal">
       <thead>
         <tr>
-          <th><i class="fas fa-home"></i></th>
-          <th><i class="fas fa-bolt"></i></th>
-          <th><i class="fas fa-percent icon-percent"></i></th>
-          <th><i class="fas fa-coins"></i></th>
+          <th><i class="fas fa-home icon-header"></i></th>
+          <th><i class="fas fa-bolt icon-header"></i></th>
+          <th><i class="fas fa-percent icon-header"></i></th>
+          <th><i class="fas fa-coins icon-header"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -115,7 +136,7 @@ inputs.calcular.addEventListener("click", function (e) {
             <td>Medidor ${key}</td>
             <td>${consumo[key]} kWh</td>
             <td>${((consumo[key] / totalConsumo) * 100).toFixed(0)}%</td>
-            <td>S/ ${reparto[key].toFixed(2)}</td>
+            <td>S/ ${montosRedondeados[key].toFixed(2)}</td>
           </tr>`).join('')}
       </tbody>
     </table>
