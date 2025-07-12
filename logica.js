@@ -15,9 +15,9 @@ const inputs = {
 
 const modal = document.getElementById("resultadoModal");
 const modalBody = document.querySelector(".modal-body");
-const cerrarModal = document.getElementById("cerrarModal");
+const btnCerrar = document.querySelector(".cerrar");
 
-// === FORMATO MONTO RECIBO ===
+// === FORMATO AUTOMÁTICO MONTO ===
 inputs.monto.addEventListener("blur", () => {
   let valor = parseFloat(inputs.monto.value);
   if (!isNaN(valor) && valor > 0) {
@@ -27,49 +27,31 @@ inputs.monto.addEventListener("blur", () => {
   }
 });
 
-// === CALCULO CONSUMO CON TIMER DE SEGURIDAD ===
-let temporizadores = {};
+// === CALCULAR CONSUMO CON VALIDACIÓN ===
+function calcularConsumo(anterior, actual) {
+  const a = anterior.trim();
+  const b = actual.trim();
 
-function calcularConsumoSeguro(anterior, actual) {
-  const numAnterior = parseInt(anterior, 10);
-  const numActual = parseInt(actual, 10);
+  if (a.length > 0 && b.length > 0 && a.length === b.length) {
+    const valA = parseInt(a);
+    const valB = parseInt(b);
 
-  if (isNaN(numAnterior) || isNaN(numActual)) return null;
+    if (isNaN(valA) || isNaN(valB)) return -1;
 
-  if (numActual < numAnterior) {
-    alert("La lectura actual no puede ser menor que la anterior.");
-    return "error";
-  } else if (numActual === numAnterior) {
-    alert("Lectura sin consumo registrado.");
-    return 0;
-  } else {
-    return numActual - numAnterior;
+    if (valB < valA) return "error";
+    if (valB === valA) return "igual";
+
+    return valB - valA;
   }
+
+  return -1;
 }
 
-["A", "B", "C"].forEach((letra) => {
-  const anterior = inputs[`anterior${letra}`];
-  const actual = inputs[`actual${letra}`];
-  const consumo = inputs[`consumo${letra}`];
+// === REDONDEO A LA DÉCIMA MÁS CERCANA ===
+function redondearDecimal(num) {
+  return Math.round(num * 10) / 10;
+}
 
-  const calcular = () => {
-    const resultado = calcularConsumoSeguro(anterior.value, actual.value);
-
-    if (resultado === "error") {
-      actual.value = "";
-      consumo.value = "";
-    } else if (resultado !== null) {
-      consumo.value = `${resultado} kWh`;
-    }
-  };
-
-  actual.addEventListener("input", () => {
-    clearTimeout(temporizadores[letra]);
-    temporizadores[letra] = setTimeout(calcular, 500);
-  });
-});
-
-// === OBTENER PERIODO ===
 function obtenerPeriodoActual() {
   const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
   const ahora = new Date();
@@ -80,76 +62,130 @@ function obtenerPeriodoActual() {
   return `${mesInicio} - ${mesFin} de ${anio}`;
 }
 
-// === OBTENER FECHA Y HORA ===
 function obtenerFechaHora() {
   const ahora = new Date();
-  return ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }) + ' - ' + ahora.toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' }) + ' - ' +
+         ahora.toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
-// === CALCULAR Y MOSTRAR RESULTADOS ===
+// === VALIDAR Y MOSTRAR CONSUMO AUTOMÁTICO ===
+["anteriorA","actualA","anteriorB","actualB","anteriorC","actualC"].forEach((campo, idx) => {
+  document.getElementById(campo).addEventListener("input", () => {
+    const consumoA = calcularConsumo(inputs.anteriorA.value, inputs.actualA.value);
+    const consumoB = calcularConsumo(inputs.anteriorB.value, inputs.actualB.value);
+    const consumoC = calcularConsumo(inputs.anteriorC.value, inputs.actualC.value);
+
+    if (consumoA === "error") {
+      alert("⚠️ Lectura A: La lectura actual no puede ser menor que la anterior");
+      inputs.actualA.value = "";
+      inputs.consumoA.value = "";
+    } else if (consumoA === "igual") {
+      alert("ℹ️ Lectura A: No hay consumo registrado este mes");
+      inputs.consumoA.value = "0 kWh";
+    } else if (consumoA >= 0) {
+      inputs.consumoA.value = `${consumoA} kWh`;
+    }
+
+    if (consumoB === "error") {
+      alert("⚠️ Lectura B: La lectura actual no puede ser menor que la anterior");
+      inputs.actualB.value = "";
+      inputs.consumoB.value = "";
+    } else if (consumoB === "igual") {
+      alert("ℹ️ Lectura B: No hay consumo registrado este mes");
+      inputs.consumoB.value = "0 kWh";
+    } else if (consumoB >= 0) {
+      inputs.consumoB.value = `${consumoB} kWh`;
+    }
+
+    if (consumoC === "error") {
+      alert("⚠️ Lectura C: La lectura actual no puede ser menor que la anterior");
+      inputs.actualC.value = "";
+      inputs.consumoC.value = "";
+    } else if (consumoC === "igual") {
+      alert("ℹ️ Lectura C: No hay consumo registrado este mes");
+      inputs.consumoC.value = "0 kWh";
+    } else if (consumoC >= 0) {
+      inputs.consumoC.value = `${consumoC} kWh`;
+    }
+  });
+});
+
+// === BOTÓN CALCULAR ===
 inputs.calcular.addEventListener("click", function (e) {
   e.preventDefault();
 
   const montoTotal = parseFloat(inputs.monto.value);
   if (isNaN(montoTotal) || montoTotal <= 0) {
-    alert("Por favor, ingresa un monto válido mayor a cero.");
+    alert("⚠️ Ingrese un monto válido del recibo.");
     return;
   }
 
   const consumo = {
-    A: parseInt(inputs.consumoA.value) || 0,
-    B: parseInt(inputs.consumoB.value) || 0,
-    C: parseInt(inputs.consumoC.value) || 0
+    A: calcularConsumo(inputs.anteriorA.value, inputs.actualA.value),
+    B: calcularConsumo(inputs.anteriorB.value, inputs.actualB.value),
+    C: calcularConsumo(inputs.anteriorC.value, inputs.actualC.value)
   };
 
-  const totalConsumo = consumo.A + consumo.B + consumo.C;
-  if (totalConsumo === 0) {
-    alert("Los consumos registrados no son válidos. Verifica las lecturas.");
+  if (Object.values(consumo).includes("error") || Object.values(consumo).includes(-1)) {
+    alert("⚠️ Verifica todas las lecturas. Asegúrate de que sean válidas.");
     return;
   }
 
-  // === EVALUAR QUIÉN PAGA COMISIÓN ===
+  const totalConsumo = consumo.A + consumo.B + consumo.C;
+  if (totalConsumo === 0) {
+    alert("⚠️ El consumo total es cero. No hay datos para repartir.");
+    return;
+  }
+
+  // Evaluar si se aplica comisión
   let comision = 0;
-  const elegibles = [consumo.A >= 2, consumo.B >= 2];
-  const aportantes = elegibles.filter(Boolean).length;
-  if (aportantes > 0) comision = 1;
+  const aplicaA = consumo.A >= 2;
+  const aplicaB = consumo.B >= 2;
+  const aportantes = [aplicaA, aplicaB].filter(Boolean).length;
+
+  if (aportantes > 0) {
+    comision = 1;
+  }
 
   const montoSinComision = montoTotal - comision;
-  const repartoBruto = {};
-  let acumulado = 0;
 
-  ["A", "B"].forEach(key => {
-    repartoBruto[key] = parseFloat(((consumo[key] / totalConsumo) * montoSinComision).toFixed(2));
-    acumulado += repartoBruto[key];
-  });
+  // Reparto proporcional sin comision aún
+  const proporcional = {
+    A: redondearDecimal((consumo.A / totalConsumo) * montoSinComision),
+    B: redondearDecimal((consumo.B / totalConsumo) * montoSinComision),
+    C: redondearDecimal((consumo.C / totalConsumo) * montoSinComision)
+  };
 
-  repartoBruto.C = parseFloat((montoTotal - acumulado).toFixed(2));
+  let descuentoC = 0;
 
-  // === REDONDEOS FINALES ===
-  const repartoFinal = {};
-  let totalFinal = 0;
+  if (comision === 1) {
+    if (aportantes === 2) {
+      proporcional.A = redondearDecimal(proporcional.A + 0.5);
+      proporcional.B = redondearDecimal(proporcional.B + 0.5);
+      descuentoC = 1;
+    } else if (aportaA) {
+      proporcional.A = redondearDecimal(proporcional.A + 1);
+      descuentoC = 1;
+    } else if (aportaB) {
+      proporcional.B = redondearDecimal(proporcional.B + 1);
+      descuentoC = 1;
+    }
+  }
 
-  ["A", "B", "C"].forEach(key => {
-    repartoFinal[key] = Math.round(repartoBruto[key] * 20) / 20; // Redondeo a múltiplos de 0.05
-    totalFinal += repartoFinal[key];
-  });
+  proporcional.C = redondearDecimal(montoTotal - (proporcional.A + proporcional.B));
 
-  // Ajustar diferencias si el total no da exacto
-  const diferencia = parseFloat((montoTotal - totalFinal).toFixed(2));
-  repartoFinal.C += diferencia;
-
-  // === CONSTRUIR TABLA ===
-  let tablaHTML = `
+  // Crear tabla
+  const tablaHTML = `
     <h3 class="modal-title">Resumen del Reparto del Pago de Luz</h3>
-    <p class="modal-periodo"><strong>${obtenerPeriodoActual()}</strong></p>
+    <p class="modal-periodo">${obtenerPeriodoActual()}</p>
     <p class="modal-fecha">${obtenerFechaHora()}</p>
     <table class="tabla-modal">
       <thead>
         <tr>
-          <th><i class="fas fa-home" style="color:#007BFF;"></i></th>
-          <th><i class="fas fa-bolt" style="color:#007BFF;"></i></th>
-          <th><i class="fas fa-percent" style="color:#007BFF;"></i></th>
-          <th><i class="fas fa-coins" style="color:#007BFF;"></i></th>
+          <th><i class="fas fa-home"></i></th>
+          <th><i class="fas fa-bolt"></i></th>
+          <th><i class="fas fa-percent icon-percent"></i></th>
+          <th><i class="fas fa-coins"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -157,18 +193,3 @@ inputs.calcular.addEventListener("click", function (e) {
           <tr>
             <td>Medidor ${key}</td>
             <td>${consumo[key]} kWh</td>
-            <td>${Math.round((consumo[key] / totalConsumo) * 100)}%</td>
-            <td>S/ ${repartoFinal[key].toFixed(2)}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>
-  `;
-
-  modalBody.innerHTML = tablaHTML;
-  modal.classList.add("mostrar");
-});
-
-// === BOTÓN PARA CERRAR MODAL ===
-cerrarModal.addEventListener("click", () => {
-  modal.classList.remove("mostrar");
-});
