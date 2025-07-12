@@ -13,6 +13,9 @@ const inputs = {
   calcular: document.getElementById("calcular")
 };
 
+const modal = document.getElementById("resultadoModal");
+const modalBody = document.querySelector(".modal-body");
+
 // === FORMATO AUTOMÁTICO AL SALIR DEL CAMPO MONTO ===
 inputs.monto.addEventListener("blur", () => {
   let valor = parseFloat(inputs.monto.value);
@@ -108,10 +111,32 @@ inputs.calcular.addEventListener("click", function (e) {
   // Medidor C paga el resto
   reparto.C = redondearDosDecimales(montoTotal - acumulado);
 
-  // Mostrar datos en consola (temporal)
-  console.log("Periodo:", obtenerPeriodoActual());
-  console.log("Fecha y hora:", obtenerFechaHora());
-  console.log("Consumos:", consumo);
-  console.log("Reparto:", reparto);
-  console.log("Comisión aplicada:", comision);
+  // === GENERAR MODAL ===
+  let tablaHTML = `
+    <h3 class="modal-title">Resumen del Reparto del Pago de Luz</h3>
+    <p class="modal-periodo">${obtenerPeriodoActual()}</p>
+    <p class="modal-fecha">${obtenerFechaHora()}</p>
+    <table class="tabla-modal">
+      <thead>
+        <tr>
+          <th><i class="fas fa-home"></i></th>
+          <th><i class="fas fa-bolt"></i></th>
+          <th><i class="fas fa-percent icon-percent"></i></th>
+          <th><i class="fas fa-coins"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${["A","B","C"].map(key => `
+          <tr>
+            <td>Medidor ${key}</td>
+            <td>${consumo[key]} kWh</td>
+            <td>${((consumo[key] / totalConsumo) * 100).toFixed(0)}%</td>
+            <td>S/ ${reparto[key].toFixed(2)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+
+  modalBody.innerHTML = tablaHTML;
+  modal.classList.add("mostrar");
 });
